@@ -2,6 +2,8 @@ const fs = require('fs')
 
 module.exports = {
   handleStudentData,
+  getStudentObject,
+  deleteStudentObject,
   checkStudentDataAvailability,
   getStudentParams
 }
@@ -23,6 +25,37 @@ function handleStudentData (id, keys, value) {
   return student
 }
 
+function getStudentObject (id, keys) {
+  try {
+    const student = requireUncached(`./data/${id}.json`)
+    const arr = keys.slice()
+    return arr.reduce((obj, key) => {
+      if (obj && key in obj) {
+        return obj[key]
+      }
+      throw new Error('Not Found')
+    }, student)
+  } catch (error) {
+    throw new Error('Not Found')
+  }
+}
+
+function deleteStudentObject (id, keys) {
+  try {
+    const student = requireUncached(`./data/${id}.json`)
+    const arr = keys.slice()
+    arr.reduce((obj, key, i) => {
+      if (obj && key in obj) {
+        if (i === arr.length - 1) delete obj[key]
+        return obj[key]
+      }
+      throw new Error('Not Found')
+    }, student)
+    return student
+  } catch (error) {
+    throw new Error('Not Found')
+  }
+}
 function requireUncached (module) {
   delete require.cache[require.resolve(module)]
   return require(module)
