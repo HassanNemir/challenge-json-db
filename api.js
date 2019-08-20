@@ -6,10 +6,14 @@ module.exports = {
   deleteStudentData
 }
 
-function storeStudentData (req, res, next) {
+async function storeStudentData (req, res, next) {
   const studentParams = util.getStudentParams(req.params, req.body)
   const { studentId, studentProporties, value } = studentParams
-  const student = util.handleStudentData(studentId, studentProporties, value)
+  const student = await util.handleStudentData(
+    studentId,
+    studentProporties,
+    value
+  )
   res.json(student)
 }
 

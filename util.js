@@ -1,4 +1,5 @@
-const fs = require('fs')
+const Promise = require('bluebird')
+const fs = Promise.promisifyAll(require('fs'))
 
 module.exports = {
   handleStudentData,
@@ -8,7 +9,7 @@ module.exports = {
   getStudentParams
 }
 
-function handleStudentData (id, keys, value) {
+async function handleStudentData (id, keys, value) {
   let avKeys = checkStudentDataAvailability(id, keys)
   if (avKeys) {
     const student = requireUncached(`./data/${id}`)
@@ -16,12 +17,15 @@ function handleStudentData (id, keys, value) {
     arr.splice(arr.indexOf(avKeys[0]))
     let stKey = getNestedObject(student, arr)
     assignNestedKeys(stKey, avKeys, value)
-    fs.writeFileSync(`./data/${id}.json`, JSON.stringify(student, null, 2))
+    await fs.writeFileAsync(
+      `./data/${id}.json`,
+      JSON.stringify(student, null, 2)
+    )
     return student
   }
   const student = {}
   assignNestedKeys(student, keys, value)
-  fs.writeFileSync(`./data/${id}.json`, JSON.stringify(student, null, 2))
+  await fs.writeFileAsync(`./data/${id}.json`, JSON.stringify(student, null, 2))
   return student
 }
 

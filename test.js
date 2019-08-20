@@ -1,6 +1,7 @@
 const tape = require('tape')
 const jsonist = require('jsonist')
-const fs = require('fs')
+const Promise = require('bluebird')
+const fs = Promise.promisifyAll(require('fs'))
 
 const port = (process.env.PORT = process.env.PORT || require('get-port-sync')())
 const endpoint = `http://localhost:${port}`
@@ -84,8 +85,8 @@ tape('Delete Data', async function (t) {
   })
 })
 
-tape('cleanup', function (t) {
-  fs.unlinkSync('./data/s10.json')
+tape('cleanup', async function (t) {
+  await fs.unlinkAsync('./data/s10.json')
   server.close()
   t.end()
 })
